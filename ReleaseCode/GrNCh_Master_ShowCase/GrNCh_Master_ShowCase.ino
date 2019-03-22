@@ -1,42 +1,35 @@
-//Team Grill n Chill Firmware Rev 0.6
+//Team Grill n Chill Firmware
 //Major contributions to firmware are credited to Son A. and Steadfast D.
 //Bluetooth components are credited to Ma A. and Nguyen J.
 
-
-//Libraries [to be cited]
+//Libraries
 #include "max6675.h"
 #include "DualMC33926MotorShield.h"
 #include <Encoder.h>
 
-//Motor Declarations
-DualMC33926MotorShield md; //motor driver md
-
-//Encoder Declarationa
-Encoder encVal(2,3);
-
-//TProbe Declarations
+//Pin Definitions
 int ktcSO = 25; //Slave out
 int ktcCS = 5; //Chip Select
 int ktcCLK = 6; //Serial Clock
-MAX6675 ktc(ktcCLK, ktcCS, ktcSO); //thermocouple ktc defined with pins.
+int switchPin = 30;
 
-//Logic Declarations
+//Component Declarations
+DualMC33926MotorShield md;
+Encoder encVal(2,3);
+MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
 
+//Logic Variables
 int motorSpeed = 400;
 short halfTurn = 11973;
-
 bool clockWise = true;
 bool nClockWise = false;
 bool turning = false;
 int switchVal;
 bool timing = false;
-
 unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 500;
 unsigned long tempInterval = 500;
 unsigned long interval = 5000;
-
-int switchPin = 30; //was 23
 
 //Motor Fault Code
 void stopIfFault()
