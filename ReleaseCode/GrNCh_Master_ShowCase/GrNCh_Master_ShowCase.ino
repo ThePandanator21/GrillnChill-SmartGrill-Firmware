@@ -8,19 +8,28 @@
 #include <Encoder.h>
 
 //Pin Definitions
-int ktcSO = 25; //Slave out
-int ktcCS = 5; //Chip Select
-int ktcCLK = 6; //Serial Clock
-int switchPin = 30;
+int ENC_A = 2;
+int ENC_B = 3;
+int BUZZ = 6; //PWM pin for buzzer
+int ESTOP = 21; //Estop Switch, rigged to HW interrupt
+int pSCK = 23; //Serial Clock
+int pMISO = 25; //Slave out
+int PROBE_0 = 26; //Ambient Probe Chip Select
+int PROBE_1 = 27; //Meat Probe Chip Select
+int PROBE_2 = 28; //System Probe Chip Select
+
 
 //Component Declarations
 DualMC33926MotorShield md;
-Encoder encVal(2,3);
-MAX6675 ktc(ktcCLK, ktcCS, ktcSO);
+Encoder encVal(ENC_A,ENC_B);
+MAX6675 ambProbe(pSCK, PROBE_0, pMISO);
+MAX6675 metProbe(pSCK, PROBE_1, pMISO);
+MAX6675 sysProbe(pSCK, PROBE_2, pMISO);
 
 //Logic Variables
-int motorSpeed = 400;
-short halfTurn = 11973;
+int mSpeed = 400;
+short rotF = 11972;
+short rotB = 11973;
 bool clockWise = true;
 bool nClockWise = false;
 bool turning = false;
@@ -30,43 +39,24 @@ unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 500;
 unsigned long tempInterval = 500;
 unsigned long interval = 5000;
-
-//Motor Fault Code
-void stopIfFault()
-{
-  if (md.getFault())
-  {
-    Serial.println("fault");
-    while(1);
-  }
-}
+long ambTemp;
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(switchPin, INPUT_PULLUP);
+  pinMode(ESTOP, INPUT_PULLUP);
   encVal.write(0);
   md.init();
 }
 
 void loop()
 {
-//Data Read Block
-  //Motor 1 Encoder
-  long newEncVal = encVal.read();
-  //Serial.println(newEncVal);
-  //Program time
   unsigned long currentMillis = millis();
-  //Serial.println(currentMillis);
-  //Ambient Temp
-
-  switchVal = digitalRead(switchPin);
-  //Serial.print("Switch State ");
-  //Serial.println(switchVal);
-
+  long newEncVal = encVal.read();
+    
   if ((currentMillis - previousTempMillis) >= tempInterval)
   {
-    long ambientTemp = ktc.readFahrenheit();
+    long ambientTemp = ambProbe.readFahrenheit();
     Serial.print("Deg F = ");
     Serial.println(ambientTemp);
     previousTempMillis = currentMillis;
@@ -87,17 +77,17 @@ void loop()
   //Motor direction code
   if ( turning && clockWise && !nClockWise )//&& timing
   {
-    md.setM1Speed(-motorSpeed);
+    md.setM1Speed(-mSpeed);
     //timing = false;
   }
   else if (turning && !clockWise && nClockWise )//&& timing
   {
-    md.setM1Speed(motorSpeed);
+    md.setM1Speed(mSpeed);
     //timing = false;
   }
 
   //Motor stopping code
-  if (newEncVal <= -halfTurn)//if direction is clockwise and needs to stop
+  if (newEncVal <= -rotB)//if direction is clockwise and needs to stop
   {
     md.setM1Speed(0);
     encVal.write(0);
@@ -107,7 +97,7 @@ void loop()
     //Serial.println("Stop Neg Called");
     //previousMillis = currentMillis;
   }
-  else if (newEncVal >= halfTurn)
+  else if (newEncVal >= rotF)
   {
     md.setM1Speed(0);
     encVal.write(0);
@@ -116,5 +106,15 @@ void loop()
     turning = false;
     //Serial.println("Stop Pos Called");
     //previousMillis = currentMillis;
+  }
+}
+
+//Motor Fault Code
+void stopIfFault()
+{
+  if (md.getFault())
+  {
+    Serial.println("fault");
+    while(1);
   }
 }
