@@ -12,6 +12,7 @@ int ENC_A = 2;
 int ENC_B = 3;
 int BUZZ = 6; //PWM pin for buzzer
 int ESTOP = 21; //Estop Switch, rigged to HW interrupt
+int HOMESWITCH = 20;
 int pSCK = 23; //Serial Clock
 int pMISO = 25; //Slave out
 int PROBE_0 = 26; //Ambient Probe Chip Select
@@ -49,6 +50,7 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
+  pinMode(HOMESWITCH, INPUT_PULLUP);
   encVal.write(0);
   md.init();
   resetReadings();
@@ -132,6 +134,13 @@ void resetReadings()
     readings[x] = 0;
   }
   readIndex = 0;
+}
+
+void rotHome()
+{
+  while
+  
+  md.setM1Speed(-mSpeed);
 }
 
 //Motor Fault Code
