@@ -39,7 +39,7 @@ unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 500;
 unsigned long tempInterval = 500;
 unsigned long interval = 5000;
-int ambTemp;
+long ambTemp;
 const int numReadings = 10;
 int readIndex = 0;
 int readings[numReadings];
@@ -61,9 +61,10 @@ void loop()
     
   if ((currentMillis - previousTempMillis) >= tempInterval)
   {
-    long ambientTemp = ambProbe.readFahrenheit();
-    Serial.print("Deg F = ");
-    Serial.println(ambientTemp);
+//    long ambientTemp = ambProbe.readFahrenheit();
+//    Serial.print("Deg F = ");
+//    Serial.println(ambientTemp);
+    ambTemp = getTemp();
     previousTempMillis = currentMillis;
   }
 
@@ -114,9 +115,17 @@ void loop()
   }
 }
 
-int getTemp(int temp)
+long getTemp()
 {
-  
+  long total = 0;
+  for(readIndex; readIndex < numReadings; readIndex++)
+  {
+    readings[readIndex] = ambProbe.readFahrenheit();
+    total = total + readings[readIndex];
+  }
+  long avg = total / numReadings;
+  resetReadings();
+  return avg;
 }
 
 void resetReadings()
