@@ -39,7 +39,11 @@ unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 500;
 unsigned long tempInterval = 500;
 unsigned long interval = 5000;
-long ambTemp;
+int ambTemp;
+const int numReadings = 10;
+int readIndex = 0;
+int readings[numReadings];
+
 
 void setup()
 {
@@ -47,6 +51,7 @@ void setup()
   pinMode(ESTOP, INPUT_PULLUP);
   encVal.write(0);
   md.init();
+  resetReadings();
 }
 
 void loop()
@@ -107,6 +112,21 @@ void loop()
     //Serial.println("Stop Pos Called");
     //previousMillis = currentMillis;
   }
+}
+
+int getTemp(int temp)
+{
+  
+}
+
+void resetReadings()
+{
+  for (int x = 0; x < numReadings; x++)
+  {
+    readings[x] = 0;
+  }
+
+  readIndex = 0;
 }
 
 //Motor Fault Code
