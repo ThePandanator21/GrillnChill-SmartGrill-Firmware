@@ -134,13 +134,18 @@ void resetReadings()
     readings[x] = 0;
   }
   readIndex = 0;
+  return;
 }
 
 void rotHome()
 {
-  while
-  
-  md.setM1Speed(-mSpeed);
+  bool homeSwVal = digitalRead(HOMESWITCH);
+  while (!homeSwVal)
+  {
+    md.setM1Speed(-mSpeed);
+    homeSwVal = digitalRead(HOMESWITCH);
+  }
+  return;
 }
 
 //Motor Fault Code
