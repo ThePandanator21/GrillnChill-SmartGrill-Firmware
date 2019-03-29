@@ -64,7 +64,7 @@ void loop()
 //    long ambientTemp = ambProbe.readFahrenheit();
 //    Serial.print("Deg F = ");
 //    Serial.println(ambientTemp);
-    ambTemp = getTemp();
+    ambTemp = getTemp(ambProbe);
     previousTempMillis = currentMillis;
   }
 
@@ -115,12 +115,12 @@ void loop()
   }
 }
 
-long getTemp()
+long getTemp(MAX6675 probe)
 {
   long total = 0;
   for(readIndex; readIndex < numReadings; readIndex++)
   {
-    readings[readIndex] = ambProbe.readFahrenheit();
+    readings[readIndex] = probe.readFahrenheit();
     total = total + readings[readIndex];
   }
   long avg = total / numReadings;
