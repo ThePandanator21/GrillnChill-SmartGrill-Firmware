@@ -61,22 +61,19 @@ void loop()
     
   if ((currentMillis - previousTempMillis) >= tempInterval)
   {
-//    long ambientTemp = ambProbe.readFahrenheit();
-//    Serial.print("Deg F = ");
-//    Serial.println(ambientTemp);
     ambTemp = getTemp(ambProbe);
     previousTempMillis = currentMillis;
   }
 
-  if ((switchVal == LOW) && ((currentMillis - previousMillis) >= interval))
-  {
-    turning = true;
-    previousMillis = currentMillis;
-  }
-  else
-  {
-    turning = false;
-  }
+//  if ((switchVal == LOW) && ((currentMillis - previousMillis) >= interval))
+//  {
+//    turning = true;
+//    previousMillis = currentMillis;
+//  }
+//  else
+//  {
+//    turning = false;
+//  }
 
   //Serial.println(turning);
   
@@ -134,7 +131,6 @@ void resetReadings()
   {
     readings[x] = 0;
   }
-
   readIndex = 0;
 }
 
