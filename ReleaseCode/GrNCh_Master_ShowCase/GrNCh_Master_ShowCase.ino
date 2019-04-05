@@ -31,17 +31,12 @@ const int GLOBAL_ERROR_LIMIT = 15;
 int GLOBAL_ERROR_COUNT = 0;
 
 int mSpeed = 400;
-short rotF = 11972;
-//short rotB = 11973;
-//bool clockWise = true;
-//bool nClockWise = false;
-//bool turning = false;
+const short rotF = -11972; //needs to be negative because it works better than trying to use the abs() function.
 int switchVal;
-//bool timing = false;
 bool isHome = false;
 unsigned long previousMillis = 0;
-unsigned long previousTempMillis = 5000;
-unsigned long previousFlipMillis = 5000;
+unsigned long previousTempMillis = 0;
+unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
 double ambTemp;
@@ -60,18 +55,21 @@ void loop()
 {
   unsigned long currentMillis = millis();
 
-  //Serial.println(currentMillis);
+  //Serial.println(currentMillis); //Debug print.
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
-    Serial.println("In if statement"); 
+    //Serial.println("In if statement"); //Debug print.
     ambTemp = getTemp(ambProbe);
-    Serial.println(ambTemp);
+    //Serial.println(ambTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
   if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
   {
+    //Serial.print("The value of isHome = "); //Debug print.
+    //Serial.println(isHome);
+    
     if (isHome)
     {
       rotBasket();
@@ -104,7 +102,7 @@ double getTemp(MAX6675 probe)
 
 void rotHome()
 {
-  //Serial.println("Enter rotHome");
+  //Serial.println("Enter rotHome"); //Debug print.
   bool homeSwVal = digitalRead(HOMESWITCH);
   while (!homeSwVal)
   {
@@ -112,7 +110,7 @@ void rotHome()
     homeSwVal = digitalRead(HOMESWITCH);
   }
   md.setM1Speed(0);
-  //Serial.println("Exit rotHome");
+  //Serial.println("Exit rotHome"); //Debug print.
   isHome = true;
   return;
 }
@@ -124,11 +122,13 @@ void rotBasket()
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
   long newEncVal = motorEnc.read();
-  while (newEncVal < rotF)//while  not turned 180 degrees
+  //Serial.println("rotBasket function called"); //Debug print.
+  while (newEncVal > rotF)//while  not turned 180 degrees
   {
     //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
+    //Serial.println(newEncVal);//Debug print.
   }
   //Motor Stopping code
   md.setM1Speed(0);
