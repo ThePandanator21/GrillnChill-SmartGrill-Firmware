@@ -113,16 +113,21 @@ void rotHome()
 
 void flipBasket()
 {
+  /*Define a new long to contain the motor encoder's current value.
+    While the encoders value is less than that of our rot limit, drive motor.
+    Else, stop motor, set isHome to false, reset enc value, and then return.
+  */
   long newEncVal = motorEnc.read();
   while (newEncVal < rotF)//while  not turned 180 degrees
   {
+    //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
   }
-  //Motor stopping code
+  //Motor Stopping code
   md.setM1Speed(0);
   motorEnc.write(0);
-  
+  isHome = false;
   return;
 }
 
