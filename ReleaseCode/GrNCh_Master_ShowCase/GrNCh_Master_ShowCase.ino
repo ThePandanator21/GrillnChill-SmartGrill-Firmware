@@ -74,7 +74,13 @@ void loop()
   {
     if (isHome)
     {
-      
+      rotBasket();
+      previousFlipMillis = currentMillis;
+    }
+    else
+    {
+      rotHome();
+      previousFlipMillis = currentMillis;
     }
   }
 
@@ -111,7 +117,7 @@ void rotHome()
   return;
 }
 
-void flipBasket()
+void rotBasket()
 {
   /*Define a new long to contain the motor encoder's current value.
     While the encoders value is less than that of our rot limit, drive motor.
