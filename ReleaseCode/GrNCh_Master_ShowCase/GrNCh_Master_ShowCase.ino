@@ -21,7 +21,7 @@ int HOMESWITCH = 30;
 
 //Component Declarations
 DualMC33926MotorShield md;
-Encoder encVal(ENC_A,ENC_B);
+Encoder motorEnc(ENC_A,ENC_B);
 MAX6675 ambProbe(pSCK, PROBE_0, pMISO);
 MAX6675 metProbe(pSCK, PROBE_1, pMISO);
 MAX6675 sysProbe(pSCK, PROBE_2, pMISO);
@@ -51,7 +51,7 @@ void setup()
   Serial.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
   pinMode(HOMESWITCH, INPUT_PULLUP);
-  encVal.write(0);
+  motorEnc.write(0);
   md.init();
   rotHome();
 }
@@ -113,18 +113,17 @@ void rotHome()
 
 void flipBasket()
 {
-  long newEncVal = encVal.read();
-  //Motor starting code
-  while (newEncVal < rotF)      // If not turned 180 degrees
+  long newEncVal = motorEnc.read();
+  while (newEncVal < rotF)//while  not turned 180 degrees
   {
     md.setM1Speed(mSpeed);
-    encVal.write(0);            // Clear value I guess?
-    newEncVal = encVal.read();  // Grab new value
+    newEncVal = motorEnc.read();//Grab new value
   }
-  
   //Motor stopping code
   md.setM1Speed(0);
-  encVal.write(0);
+  motorEnc.write(0);
+  
+  return;
 }
 
 //Motor Fault Code
