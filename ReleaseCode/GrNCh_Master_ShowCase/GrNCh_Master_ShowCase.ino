@@ -69,17 +69,7 @@ void loop()
     previousTempMillis = currentMillis;
   }
 
-//  if ((switchVal == LOW) && ((currentMillis - previousMillis) >= interval))
-//  {
-//    turning = true;
-//    previousMillis = currentMillis;
-//  }
-//  else
-//  {
-//    turning = false;
-//  }
 
-  //Serial.println(turning);
   
   //Motor direction code
   if ( turning && clockWise && !nClockWise )//&& timing
@@ -119,7 +109,6 @@ void loop()
   {
     stopIfFault();
   }
-  
 }
 
 double getTemp(MAX6675 probe)
