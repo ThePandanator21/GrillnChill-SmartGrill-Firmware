@@ -12,13 +12,12 @@ int ENC_A = 2;
 int ENC_B = 3;
 int BUZZ = 6; //PWM pin for buzzer
 int ESTOP = 21; //Estop Switch, rigged to HW interrupt
-int HOMESWITCH = 20;
 int pSCK = 23; //Serial Clock
 int pMISO = 25; //Slave out
 int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
-
+int HOMESWITCH = 30;
 
 //Component Declarations
 DualMC33926MotorShield md;
@@ -38,12 +37,12 @@ int switchVal;
 bool timing = false;
 unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 500;
-unsigned long tempInterval = 500;
+unsigned long tempInterval = 5000;
 unsigned long interval = 5000;
-long ambTemp;
-const int numReadings = 10;
-int readIndex = 0;
-int readings[numReadings];
+double ambTemp;
+const double numReadings = 10;
+//int readIndex = 0;
+//double readings[numReadings];
 
 
 void setup()
@@ -54,16 +53,21 @@ void setup()
   encVal.write(0);
   md.init();
   resetReadings();
+  rotHome();
 }
 
 void loop()
 {
   unsigned long currentMillis = millis();
   long newEncVal = encVal.read();
-    
+
+  //Serial.println(currentMillis);
+  
   if ((currentMillis - previousTempMillis) >= tempInterval)
   {
+    Serial.println("In if statement"); 
     ambTemp = getTemp(ambProbe);
+    Serial.println(ambTemp);
     previousTempMillis = currentMillis;
   }
 
@@ -114,37 +118,47 @@ void loop()
   }
 }
 
-long getTemp(MAX6675 probe)
+double getTemp(MAX6675 probe)
 {
-  long total = 0;
-  for(readIndex; readIndex < numReadings; readIndex++)
-  {
-    readings[readIndex] = probe.readFahrenheit();
-    total = total + readings[readIndex];
-  }
-  long avg = total / numReadings;
-  resetReadings();
-  return avg;
+//  Serial.println("In GetTemp");
+//  double total = 0;
+//  for(int x = 0; x < numReadings; x++)
+//  {
+//    Serial.println(probe.readFahrenheit());
+//    //readings[x] = probe.readFahrenheit();
+//    total = total + probe.readFahrenheit();//readings[x];
+//    //delay(10);
+//  }
+//  Serial.println(total);
+//  double avg = (total / numReadings);
+//  Serial.println("test");
+//  Serial.println(avg);
+//  Serial.println("test2");
+//  //resetReadings();
+  return probe.readFarenheit();
 }
 
 void resetReadings()
 {
   for (int x = 0; x < numReadings; x++)
   {
-    readings[x] = 0;
+    //readings[x] = 0;
   }
-  readIndex = 0;
+  //readIndex = 0;
   return;
 }
 
 void rotHome()
 {
+  Serial.println("Enter rotHome");
   bool homeSwVal = digitalRead(HOMESWITCH);
   while (!homeSwVal)
   {
     md.setM1Speed(-mSpeed);
     homeSwVal = digitalRead(HOMESWITCH);
   }
+  md.setM1Speed(0);
+  Serial.println("Exit rotHome");
   return;
 }
 
