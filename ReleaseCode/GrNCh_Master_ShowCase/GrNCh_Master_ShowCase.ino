@@ -32,16 +32,18 @@ int GLOBAL_ERROR_COUNT = 0;
 
 int mSpeed = 400;
 short rotF = 11972;
-short rotB = 11973;
-bool clockWise = true;
-bool nClockWise = false;
-bool turning = false;
+//short rotB = 11973;
+//bool clockWise = true;
+//bool nClockWise = false;
+//bool turning = false;
 int switchVal;
-bool timing = false;
+//bool timing = false;
+bool isHome = false;
 unsigned long previousMillis = 0;
-unsigned long previousTempMillis = 500;
+unsigned long previousTempMillis = 5000;
+unsigned long previousFlipMillis = 5000;
 unsigned long tempInterval = 5000;
-unsigned long interval = 5000;
+unsigned long flipInterval = 5000;
 double ambTemp;
 
 void setup()
@@ -66,43 +68,12 @@ void loop()
     Serial.println("In if statement"); 
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp);
-    previousTempMillis = currentMillis;
+    previousTempMillis = currentMillis; 
   }
 
-
-  
-  //Motor direction code
-  if ( turning && clockWise && !nClockWise )//&& timing
+  if ((currentMillis - previousFlipMillis) >= flipInterval)
   {
-    md.setM1Speed(-mSpeed);
-    //timing = false;
-  }
-  else if (turning && !clockWise && nClockWise )//&& timing
-  {
-    md.setM1Speed(mSpeed);
-    //timing = false;
-  }
-
-  //Motor stopping code
-  if (newEncVal <= -rotB)//if direction is clockwise and needs to stop
-  {
-    md.setM1Speed(0);
-    encVal.write(0);
-    clockWise = false;
-    nClockWise = true;
-    turning = false;
-    //Serial.println("Stop Neg Called");
-    //previousMillis = currentMillis;
-  }
-  else if (newEncVal >= rotF)
-  {
-    md.setM1Speed(0);
-    encVal.write(0);
-    clockWise = true;
-    nClockWise = false;
-    turning = false;
-    //Serial.println("Stop Pos Called");
-    //previousMillis = currentMillis;
+    
   }
 
   if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
@@ -125,7 +96,7 @@ double getTemp(MAX6675 probe)
 
 void rotHome()
 {
-  Serial.println("Enter rotHome");
+  //Serial.println("Enter rotHome");
   bool homeSwVal = digitalRead(HOMESWITCH);
   while (!homeSwVal)
   {
@@ -133,7 +104,8 @@ void rotHome()
     homeSwVal = digitalRead(HOMESWITCH);
   }
   md.setM1Speed(0);
-  Serial.println("Exit rotHome");
+  //Serial.println("Exit rotHome");
+  isHome = true;
   return;
 }
 
