@@ -59,11 +59,10 @@ void setup()
 void loop()
 {
   unsigned long currentMillis = millis();
-  long newEncVal = encVal.read();
 
   //Serial.println(currentMillis);
   
-  if ((currentMillis - previousTempMillis) >= tempInterval)
+  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
     Serial.println("In if statement"); 
     ambTemp = getTemp(ambProbe);
@@ -71,9 +70,12 @@ void loop()
     previousTempMillis = currentMillis; 
   }
 
-  if ((currentMillis - previousFlipMillis) >= flipInterval)
+  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
   {
-    
+    if (isHome)
+    {
+      
+    }
   }
 
   if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
@@ -107,6 +109,22 @@ void rotHome()
   //Serial.println("Exit rotHome");
   isHome = true;
   return;
+}
+
+void flipBasket()
+{
+  long newEncVal = encVal.read();
+  //Motor starting code
+  while (newEncVal < rotF)      // If not turned 180 degrees
+  {
+    md.setM1Speed(mSpeed);
+    encVal.write(0);            // Clear value I guess?
+    newEncVal = encVal.read();  // Grab new value
+  }
+  
+  //Motor stopping code
+  md.setM1Speed(0);
+  encVal.write(0);
 }
 
 //Motor Fault Code
