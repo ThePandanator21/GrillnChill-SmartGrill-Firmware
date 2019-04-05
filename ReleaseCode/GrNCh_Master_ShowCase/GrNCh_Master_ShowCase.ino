@@ -27,6 +27,9 @@ MAX6675 metProbe(pSCK, PROBE_1, pMISO);
 MAX6675 sysProbe(pSCK, PROBE_2, pMISO);
 
 //Logic Variables
+const int GLOBAL_ERROR_LIMIT = 15;
+int GLOBAL_ERROR_COUNT = 0;
+
 int mSpeed = 400;
 short rotF = 11972;
 short rotB = 11973;
@@ -111,11 +114,22 @@ void loop()
     //Serial.println("Stop Pos Called");
     //previousMillis = currentMillis;
   }
+
+  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
+  {
+    stopIfFault();
+  }
+  
 }
 
 double getTemp(MAX6675 probe)
 {
   double temp = probe.readFarenheit();
+
+  if (temp < 0)//MAX6675 tends to skew to here if there is a connection error.
+  {
+    GLOBAL_ERROR_COUNT++;
+  }
   
   return temp;
 }
