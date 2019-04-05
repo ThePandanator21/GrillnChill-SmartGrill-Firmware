@@ -40,10 +40,6 @@ unsigned long previousTempMillis = 500;
 unsigned long tempInterval = 5000;
 unsigned long interval = 5000;
 double ambTemp;
-const double numReadings = 10;
-//int readIndex = 0;
-//double readings[numReadings];
-
 
 void setup()
 {
@@ -52,7 +48,6 @@ void setup()
   pinMode(HOMESWITCH, INPUT_PULLUP);
   encVal.write(0);
   md.init();
-  resetReadings();
   rotHome();
 }
 
@@ -120,32 +115,9 @@ void loop()
 
 double getTemp(MAX6675 probe)
 {
-//  Serial.println("In GetTemp");
-//  double total = 0;
-//  for(int x = 0; x < numReadings; x++)
-//  {
-//    Serial.println(probe.readFahrenheit());
-//    //readings[x] = probe.readFahrenheit();
-//    total = total + probe.readFahrenheit();//readings[x];
-//    //delay(10);
-//  }
-//  Serial.println(total);
-//  double avg = (total / numReadings);
-//  Serial.println("test");
-//  Serial.println(avg);
-//  Serial.println("test2");
-//  //resetReadings();
-  return probe.readFarenheit();
-}
-
-void resetReadings()
-{
-  for (int x = 0; x < numReadings; x++)
-  {
-    //readings[x] = 0;
-  }
-  //readIndex = 0;
-  return;
+  double temp = probe.readFarenheit();
+  
+  return temp;
 }
 
 void rotHome()
