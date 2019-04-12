@@ -41,14 +41,17 @@ unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
 double ambTemp;
 
+long TARGET_TEMP;
+
 void setup()
 {
   Serial.begin(9600);
+  Serial1.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
   pinMode(HOMESWITCH, INPUT_PULLUP);
   motorEnc.write(0);
   md.init();
-  rotHome();
+//  rotHome();
 }
 
 void loop()
@@ -56,31 +59,38 @@ void loop()
   unsigned long currentMillis = millis();
 
   //Serial.println(currentMillis); //Debug print.
-  
-  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
-  {
-    //Serial.println("In if statement"); //Debug print.
-    ambTemp = getTemp(ambProbe);
-    //Serial.println(ambTemp); //Debug print.
-    previousTempMillis = currentMillis; 
-  }
 
-  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+  if (Serial1.available() > 0)
   {
-    //Serial.print("The value of isHome = "); //Debug print.
-    //Serial.println(isHome);
-    
-    if (isHome)
-    {
-      rotBasket();
-      previousFlipMillis = currentMillis;
-    }
-    else
-    {
-      rotHome();
-      previousFlipMillis = currentMillis;
-    }
+    Serial.println("In BT Code");
+    TARGET_TEMP = Serial1.parseInt();
+    Serial.println(TARGET_TEMP);
   }
+  
+//  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
+//  {
+//    //Serial.println("In if statement"); //Debug print.
+//    ambTemp = getTemp(ambProbe);
+//    //Serial.println(ambTemp); //Debug print.
+//    previousTempMillis = currentMillis; 
+//  }
+//
+//  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+//  {
+//    //Serial.print("The value of isHome = "); //Debug print.
+//    //Serial.println(isHome);
+//    
+//    if (isHome)
+//    {
+//      rotBasket();
+//      previousFlipMillis = currentMillis;
+//    }
+//    else
+//    {
+//      rotHome();
+//      previousFlipMillis = currentMillis;
+//    }
+//  }
 
   if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
   {
@@ -110,7 +120,7 @@ void rotHome()
     homeSwVal = digitalRead(HOMESWITCH);
   }
   md.setM1Speed(0);
-  //Serial.println("Exit rotHome"); //Debug print.
+  Serial.println("Exit rotHome"); //Debug print.
   isHome = true;
   return;
 }
