@@ -65,6 +65,7 @@ void loop()
     Serial.println("In BT Code");
     TARGET_TEMP = Serial1.parseInt();
     Serial.println(TARGET_TEMP);
+    Serial1.write("300,200,0,0");
   }
   
 //  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
