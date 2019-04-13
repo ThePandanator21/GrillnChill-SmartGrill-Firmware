@@ -41,6 +41,7 @@ unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
 double ambTemp;
+double meatTemp;
 
 void setup()
 {
@@ -66,7 +67,9 @@ void loop()
   {
     //Serial.println("In if statement"); //Debug print.
     ambTemp = getTemp(ambProbe);
-    //Serial.println(ambTemp); //Debug print.
+    Serial.println(ambTemp); //Debug print.
+    meatTemp = getTemp(metProbe);
+    Serial.println(ambTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
