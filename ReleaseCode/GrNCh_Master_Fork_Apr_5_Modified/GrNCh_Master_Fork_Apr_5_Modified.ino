@@ -127,7 +127,7 @@ void rotBasket()
     While the encoders value is less than that of our rot limit, drive motor.
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
-  Serial.println("rotBasket function called"); //Debug print.
+  //Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
   while (newEncVal > rotF)//while  not turned 180 degrees
@@ -135,7 +135,7 @@ void rotBasket()
     //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
-    Serial.println(newEncVal);//Debug print.
+    //Serial.println(newEncVal);//Debug print.
   }
   //Motor Stopping code
   md.setM1Speed(0);
