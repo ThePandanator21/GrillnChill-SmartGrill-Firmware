@@ -18,7 +18,7 @@ int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
 int HOMESWITCH = 30;
-int FANMODULE = 40;
+int FANMODULE = 50;
 
 //Component Declarations
 DualMC33926MotorShield md;
@@ -46,10 +46,11 @@ void setup()
 {
   Serial.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
-  pinMode(HOMESWITCH, INPUT_PULLUP);
-  pinMode(FANMODULE, OUTPUT);
+  pinMode(HOMESWITCH, INPUT); //_PULLUP
+  //pinMode(FANMODULE, OUTPUT);
   motorEnc.write(0);
   md.init();
+  motorEnc.write(0);
   rotHome();
 }
 
@@ -57,7 +58,7 @@ void loop()
 {
   unsigned long currentMillis = millis();
 
-  digitalWrite(FANMODULE, HIGH);
+  //digitalWrite(FANMODULE, HIGH);
 
   //Serial.println(currentMillis); //Debug print.
   
@@ -106,7 +107,7 @@ double getTemp(MAX6675 probe)
 
 void rotHome()
 {
-  //Serial.println("Enter rotHome"); //Debug print.
+  Serial.println("Enter rotHome"); //Debug print.
   bool homeSwVal = digitalRead(HOMESWITCH);
   while (!homeSwVal)
   {
@@ -114,8 +115,9 @@ void rotHome()
     homeSwVal = digitalRead(HOMESWITCH);
   }
   md.setM1Speed(0);
-  //Serial.println("Exit rotHome"); //Debug print.
+  Serial.println("Exit rotHome"); //Debug print.
   isHome = true;
+  motorEnc.write(0);
   return;
 }
 
@@ -125,14 +127,15 @@ void rotBasket()
     While the encoders value is less than that of our rot limit, drive motor.
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
+  Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
-  //Serial.println("rotBasket function called"); //Debug print.
+  //Serial.println(newEncVal);
   while (newEncVal > rotF)//while  not turned 180 degrees
   {
     //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
-    //Serial.println(newEncVal);//Debug print.
+    Serial.println(newEncVal);//Debug print.
   }
   //Motor Stopping code
   md.setM1Speed(0);
