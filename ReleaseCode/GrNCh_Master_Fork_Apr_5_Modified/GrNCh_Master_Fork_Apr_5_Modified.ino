@@ -12,8 +12,8 @@ int ENC_A = 2;
 int ENC_B = 3;
 int BUZZ = 6; //PWM pin for buzzer
 int ESTOP = 21; //Estop Switch, rigged to HW interrupt
-int pSCK = 23; //Serial Clock
-int pMISO = 25; //Slave out
+int pSCK = 52; //Serial Clock 23?
+int pMISO = 50; //Slave out 25?
 int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
@@ -52,7 +52,7 @@ void setup()
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
-  rotHome();
+  //rotHome();
 }
 
 void loop()
@@ -69,31 +69,31 @@ void loop()
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
-    Serial.println(ambTemp); //Debug print.
+    Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
-  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
-  {
-    //Serial.print("The value of isHome = "); //Debug print.
-    //Serial.println(isHome);
-    
-    if (isHome)
-    {
-      rotBasket();
-      previousFlipMillis = currentMillis;
-    }
-    else
-    {
-      rotHome();
-      previousFlipMillis = currentMillis;
-    }
-  }
-
-  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
-  {
-    stopIfFault();
-  }
+//  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+//  {
+//    //Serial.print("The value of isHome = "); //Debug print.
+//    //Serial.println(isHome);
+//    
+//    if (isHome)
+//    {
+//      rotBasket();
+//      previousFlipMillis = currentMillis;
+//    }
+//    else
+//    {
+//      rotHome();
+//      previousFlipMillis = currentMillis;
+//    }
+//  }
+//
+//  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
+//  {
+//    stopIfFault();
+//  }
 }
 
 double getTemp(MAX6675 probe)
