@@ -18,7 +18,7 @@ int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
 int HOMESWITCH = 30;
-int FANMODULE = 50;
+int FANMODULE = 40;
 
 //Component Declarations
 DualMC33926MotorShield md;
@@ -43,12 +43,15 @@ unsigned long flipInterval = 5000;
 double ambTemp;
 double meatTemp;
 
+double highTemp = 375;
+double lowTemp = 350;
+
 void setup()
 {
   Serial.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
   pinMode(HOMESWITCH, INPUT); //_PULLUP
-  //pinMode(FANMODULE, OUTPUT);
+  pinMode(FANMODULE, OUTPUT);
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
@@ -71,6 +74,15 @@ void loop()
     meatTemp = getTemp(metProbe);
     Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
+  }
+
+  if (ambTemp < lowTemp)
+  {
+    digitalWrite(FANMODULE, HIGH);
+  }
+  else if (ambTemp > highTemp)
+  {
+    digitalWrite(FANMODULE, LOW);
   }
 
 //  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
