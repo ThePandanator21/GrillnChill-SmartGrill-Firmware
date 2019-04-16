@@ -45,6 +45,7 @@ double meatTemp;
 
 double highTemp = 375;
 double lowTemp = 350;
+bool blowing = false;
 
 void setup()
 {
@@ -72,18 +73,22 @@ void loop()
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
-    Serial.println(meatTemp); //Debug print.
+    //Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
   if (ambTemp < lowTemp)
   {
+    blowing = true;
     digitalWrite(FANMODULE, HIGH);
   }
   else if (ambTemp > highTemp)
   {
+    blowing = false;
     digitalWrite(FANMODULE, LOW);
   }
+
+  //Serial.println(blowing);
 
 //  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
 //  {
