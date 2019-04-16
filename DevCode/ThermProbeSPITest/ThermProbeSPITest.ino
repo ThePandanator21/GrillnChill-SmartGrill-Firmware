@@ -1,8 +1,8 @@
 #include <SPI.h> //not nessary for our project, do not need to include when we merge this into our main program
 #include <max6675.h>
 
-int tProbeDIn = 25; //SPI MISO, we do not need MOSI because the thermal probes dont give a damn.
-int tProbeCLK = 23; //SPI Serial Clock
+int tProbeDIn = 50; //SPI MISO, we do not need MOSI because the thermal probes dont give a damn.
+int tProbeCLK = 52; //SPI Serial Clock
 
 //Temp Probe SPI Chip Select Vars
 int tProbeAMB = 26;
@@ -30,9 +30,9 @@ void loop() {
   {
      Serial.print("AMB reads F = ");
      Serial.println(ambientProbe.readFahrenheit());
-     Serial.print("Meat 1 Reads F = ");
-     Serial.println(meatOneProbe.readFahrenheit());
-     Serial.print("Meat 2 Reads F = ");
-     Serial.println(meatTwoProbe.readFahrenheit());
+     //Serial.print("Meat 1 Reads F = ");
+     //Serial.println(meatOneProbe.readFahrenheit());
+     //Serial.print("Meat 2 Reads F = ");
+     //Serial.println(meatTwoProbe.readFahrenheit());
   }
 }
