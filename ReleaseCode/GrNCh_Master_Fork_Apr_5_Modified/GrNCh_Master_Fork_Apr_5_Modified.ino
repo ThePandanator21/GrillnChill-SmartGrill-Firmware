@@ -40,6 +40,7 @@ unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
+unsigned long breakInterval = 4000;
 double ambTemp;
 double meatTemp;
 
@@ -56,7 +57,7 @@ void setup()
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
-  //rotHome();
+  rotHome();
 }
 
 void loop()
@@ -129,8 +130,11 @@ void rotHome()
 {
   Serial.println("Enter rotHome"); //Debug print.
   bool homeSwVal = digitalRead(HOMESWITCH);
-  while (!homeSwVal)
+  long startMillis = millis();
+  long curHomeMillis = 0;
+  while ((!homeSwVal) && ((curHomeMillis - startMillis) < breakInterval))
   {
+    curHomeMillis = millis();
     md.setM1Speed(-mSpeed);
     homeSwVal = digitalRead(HOMESWITCH);
   }
@@ -155,7 +159,7 @@ void rotBasket()
     //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
-    //Serial.println(newEncVal);//Debug print.
+    //Serial.println(newEncVal);//Debug print
   }
   //Motor Stopping code
   md.setM1Speed(0);
