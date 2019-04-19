@@ -57,7 +57,7 @@ void setup()
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
-  rotHome();
+  //rotHome();
 }
 
 void loop()
@@ -71,6 +71,7 @@ void loop()
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
     //Serial.println("In if statement"); //Debug print.
+    Serial.println(ambProbe.readFarenheit());
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
@@ -81,10 +82,12 @@ void loop()
   if (ambTemp < lowTemp)
   {
     blowing = true;
+    //Serial.println("OOO WE BLOWING");
     digitalWrite(FANMODULE, HIGH);
   }
   else if (ambTemp > highTemp)
   {
+    //Serial.println("NO BLOW ZONE");
     blowing = false;
     digitalWrite(FANMODULE, LOW);
   }
@@ -116,6 +119,8 @@ void loop()
 
 double getTemp(MAX6675 probe)
 {
+
+  //Serial.println(probe.readFarenheit());
   double temp = probe.readFarenheit();
 
   if (temp < 0)//MAX6675 tends to skew to here if there is a connection error.
