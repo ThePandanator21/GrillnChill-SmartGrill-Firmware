@@ -71,7 +71,7 @@ void loop()
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
     //Serial.println("In if statement"); //Debug print.
-    Serial.println(ambProbe.readFarenheit());
+    //Serial.println(ambProbe.readFarenheit());
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
