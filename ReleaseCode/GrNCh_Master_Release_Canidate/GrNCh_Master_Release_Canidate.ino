@@ -51,13 +51,18 @@ double lowTemp = 350;
 bool blowing = false;
 
 bool startCooking = false;
+bool startBtnState = false;
+bool stopBtnState = false;
 
 void setup()
 {
   Serial.begin(9600);
-  pinMode(ESTOP, INPUT_PULLUP);
-  pinMode(HOMESWITCH, INPUT); //_PULLUP
+  pinMode(ESTOP, INPUT);
+  pinMode(HOMESWITCH, INPUT);
+  pinMode(STARTSWITCH, INPUT);
+  pinMode(STOPSWITCH, INPUT);
   pinMode(FANMODULE, OUTPUT);
+  pinMode(STARTSWITCH, INPUT);
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
@@ -68,6 +73,19 @@ void loop()
 {
   unsigned long currentMillis = millis();
   //Serial.println(currentMillis); //Debug print.
+
+  startBtnState = digitalRead(STARTSWITCH);
+  stopBtnState = digitalRead(STOPSWITCH);
+
+  if (startBtnState)
+  {
+    startCooking = true;
+  }
+  if (stopBtnState)
+  {
+    startCooking = false;
+    rotHome();
+  }
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
@@ -80,13 +98,13 @@ void loop()
     previousTempMillis = currentMillis; 
   }
 
-  if (ambTemp < lowTemp)
+  if ((ambTemp < lowTemp) && startCooking)
   {
     blowing = true;
     //Serial.println("OOO WE BLOWING");
     digitalWrite(FANMODULE, HIGH);
   }
-  else if (ambTemp > highTemp)
+  else if ((ambTemp > highTemp) && startCooking)
   {
     //Serial.println("NO BLOW ZONE");
     blowing = false;
@@ -95,12 +113,12 @@ void loop()
 
   //Serial.println(blowing);
 
-  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+  if (((currentMillis - previousFlipMillis) >= flipInterval) && startCooking) //Time to flip. Logic heavily pending.
   {
     //Serial.print("The value of isHome = "); //Debug print.
     //Serial.println(isHome);
     
-    if (isHome)
+    if (isHome) //Export this to a function flipTime();
     {
       rotBasket();
       previousFlipMillis = currentMillis;
