@@ -1,6 +1,7 @@
 //Team Grill n Chill Firmware
 //Major contributions to firmware are credited to Son A. and Steadfast D.
 //Bluetooth components are credited to Ma A. and Nguyen J.
+//Team Members: Andrew Son, Andy Ma, Colton Russel, Daniel Martin, Dylan Steadfast, Jacob Rohlman,  and Jesse Nguyen.
 
 //Libraries
 #include "max6675.h"
