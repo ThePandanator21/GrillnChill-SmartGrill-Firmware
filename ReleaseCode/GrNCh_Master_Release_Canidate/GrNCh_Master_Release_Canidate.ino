@@ -12,12 +12,13 @@ int ENC_A = 2;
 int ENC_B = 3;
 int BUZZ = 6; //PWM pin for buzzer
 int ESTOP = 21; //Estop Switch, rigged to HW interrupt
-int pSCK = 23; //Serial Clock
-int pMISO = 25; //Slave out
+int pSCK = 52; //Serial Clock 23?
+int pMISO = 50; //Slave out 25?
 int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
 int HOMESWITCH = 30;
+int FANMODULE = 40;
 
 //Component Declarations
 DualMC33926MotorShield md;
@@ -39,59 +40,76 @@ unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
+unsigned long breakInterval = 4000;
 double ambTemp;
+double meatTemp;
 
-long TARGET_TEMP;
+double highTemp = 375;
+double lowTemp = 350;
+bool blowing = false;
 
 void setup()
 {
   Serial.begin(9600);
-  Serial1.begin(9600);
   pinMode(ESTOP, INPUT_PULLUP);
-  pinMode(HOMESWITCH, INPUT_PULLUP);
+  pinMode(HOMESWITCH, INPUT); //_PULLUP
+  pinMode(FANMODULE, OUTPUT);
   motorEnc.write(0);
   md.init();
-//  rotHome();
+  motorEnc.write(0);
+  //rotHome();
 }
 
 void loop()
 {
   unsigned long currentMillis = millis();
 
-  //Serial.println(currentMillis); //Debug print.
+  //digitalWrite(FANMODULE, HIGH);
 
-  if (Serial1.available() > 0)
-  {
-    Serial.println("In BT Code");
-    TARGET_TEMP = Serial1.parseInt();
-    Serial.println(TARGET_TEMP);
-    Serial1.write("300,200,0,0");
-  }
+  //Serial.println(currentMillis); //Debug print.
   
-//  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
-//  {
-//    //Serial.println("In if statement"); //Debug print.
-//    ambTemp = getTemp(ambProbe);
-//    //Serial.println(ambTemp); //Debug print.
-//    previousTempMillis = currentMillis; 
-//  }
-//
-//  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
-//  {
-//    //Serial.print("The value of isHome = "); //Debug print.
-//    //Serial.println(isHome);
-//    
-//    if (isHome)
-//    {
-//      rotBasket();
-//      previousFlipMillis = currentMillis;
-//    }
-//    else
-//    {
-//      rotHome();
-//      previousFlipMillis = currentMillis;
-//    }
-//  }
+  if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
+  {
+    //Serial.println("In if statement"); //Debug print.
+    //Serial.println(ambProbe.readFarenheit());
+    ambTemp = getTemp(ambProbe);
+    Serial.println(ambTemp); //Debug print.
+    meatTemp = getTemp(metProbe);
+    //Serial.println(meatTemp); //Debug print.
+    previousTempMillis = currentMillis; 
+  }
+
+  if (ambTemp < lowTemp)
+  {
+    blowing = true;
+    //Serial.println("OOO WE BLOWING");
+    digitalWrite(FANMODULE, HIGH);
+  }
+  else if (ambTemp > highTemp)
+  {
+    //Serial.println("NO BLOW ZONE");
+    blowing = false;
+    digitalWrite(FANMODULE, LOW);
+  }
+
+  //Serial.println(blowing);
+
+  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+  {
+    //Serial.print("The value of isHome = "); //Debug print.
+    //Serial.println(isHome);
+    
+    if (isHome)
+    {
+      rotBasket();
+      previousFlipMillis = currentMillis;
+    }
+    else
+    {
+      rotHome();
+      previousFlipMillis = currentMillis;
+    }
+  }
 
   if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
   {
@@ -101,6 +119,8 @@ void loop()
 
 double getTemp(MAX6675 probe)
 {
+
+  //Serial.println(probe.readFarenheit());
   double temp = probe.readFarenheit();
 
   if (temp < 0)//MAX6675 tends to skew to here if there is a connection error.
@@ -113,16 +133,20 @@ double getTemp(MAX6675 probe)
 
 void rotHome()
 {
-  //Serial.println("Enter rotHome"); //Debug print.
+  Serial.println("Enter rotHome"); //Debug print.
   bool homeSwVal = digitalRead(HOMESWITCH);
-  while (!homeSwVal)
+  long startMillis = millis();
+  long curHomeMillis = 0;
+  while ((!homeSwVal) && ((curHomeMillis - startMillis) < breakInterval))
   {
+    curHomeMillis = millis();
     md.setM1Speed(-mSpeed);
     homeSwVal = digitalRead(HOMESWITCH);
   }
   md.setM1Speed(0);
   Serial.println("Exit rotHome"); //Debug print.
   isHome = true;
+  motorEnc.write(0);
   return;
 }
 
@@ -132,14 +156,15 @@ void rotBasket()
     While the encoders value is less than that of our rot limit, drive motor.
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
-  long newEncVal = motorEnc.read();
   //Serial.println("rotBasket function called"); //Debug print.
+  long newEncVal = motorEnc.read();
+  //Serial.println(newEncVal);
   while (newEncVal > rotF)//while  not turned 180 degrees
   {
     //Motor Driving Code
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
-    //Serial.println(newEncVal);//Debug print.
+    //Serial.println(newEncVal);//Debug print
   }
   //Motor Stopping code
   md.setM1Speed(0);
