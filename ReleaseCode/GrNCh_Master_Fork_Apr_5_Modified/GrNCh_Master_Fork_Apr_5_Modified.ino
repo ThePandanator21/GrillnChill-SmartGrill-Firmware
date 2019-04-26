@@ -94,27 +94,27 @@ void loop()
 
   //Serial.println(blowing);
 
-//  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
-//  {
-//    //Serial.print("The value of isHome = "); //Debug print.
-//    //Serial.println(isHome);
-//    
-//    if (isHome)
-//    {
-//      rotBasket();
-//      previousFlipMillis = currentMillis;
-//    }
-//    else
-//    {
-//      rotHome();
-//      previousFlipMillis = currentMillis;
-//    }
-//  }
-//
-//  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
-//  {
-//    stopIfFault();
-//  }
+  if ((currentMillis - previousFlipMillis) >= flipInterval) //Time to flip. Logic heavily pending.
+  {
+    //Serial.print("The value of isHome = "); //Debug print.
+    //Serial.println(isHome);
+    
+    if (isHome)
+    {
+      rotBasket();
+      previousFlipMillis = currentMillis;
+    }
+    else
+    {
+      rotHome();
+      previousFlipMillis = currentMillis;
+    }
+  }
+
+  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
+  {
+    stopIfFault();
+  }
 }
 
 double getTemp(MAX6675 probe)
