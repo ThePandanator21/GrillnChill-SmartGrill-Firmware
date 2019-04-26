@@ -89,6 +89,8 @@ void loop()
     startCooking = false;
     rotHome();
   }
+
+  startCooking = true;
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
@@ -97,7 +99,7 @@ void loop()
     ambTemp = getTemp(ambProbe);
     Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
-    //Serial.println(meatTemp); //Debug print.
+    Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
@@ -156,14 +158,25 @@ double getTemp(MAX6675 probe)
 void rotHome()
 {
   Serial.println("Enter rotHome"); //Debug print.
-  bool homeSwVal = digitalRead(HOMESWITCH);
+  
   long startMillis = millis();
   long curHomeMillis = 0;
-  while ((!homeSwVal) && ((curHomeMillis - startMillis) < breakInterval))
+  
+  bool homeSwVal = digitalRead(HOMESWITCH);
+  Serial.print("HomeSwitch value = "); Serial.println(homeSwVal);
+  
+  while ((!homeSwVal))
   {
     curHomeMillis = millis();
     md.setM1Speed(-mSpeed);
     homeSwVal = digitalRead(HOMESWITCH);
+
+    //Serial.print("HomeSwitch value = "); Serial.println(homeSwVal);
+
+    if(((curHomeMillis - startMillis) > breakInterval))
+    {
+      break;
+    }
   }
   md.setM1Speed(0);
   Serial.println("Exit rotHome"); //Debug print.
@@ -178,7 +191,7 @@ void rotBasket()
     While the encoders value is less than that of our rot limit, drive motor.
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
-  //Serial.println("rotBasket function called"); //Debug print.
+  Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
   while (newEncVal > rotF)//while  not turned 180 degrees
@@ -192,6 +205,7 @@ void rotBasket()
   md.setM1Speed(0);
   motorEnc.write(0);
   isHome = false;
+  Serial.println("rotBasket function exit"); //Debug print.
   return;
 }
 
