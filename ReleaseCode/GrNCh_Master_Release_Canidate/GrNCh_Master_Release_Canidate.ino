@@ -65,7 +65,6 @@ void setup()
   pinMode(STARTSWITCH, INPUT);
   pinMode(STOPSWITCH, INPUT);
   pinMode(FANMODULE, OUTPUT);
-  pinMode(STARTSWITCH, INPUT);
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
@@ -86,11 +85,18 @@ void loop()
   }
   if (stopBtnState)
   {
+    if (startCooking)
+    {
+      rotHome();
+    }
+    
     startCooking = false;
-    rotHome();
   }
 
-  startCooking = true;
+  //Serial.print("StartButton value = "); Serial.println(startBtnState);
+  //Serial.print("StopButton value = "); Serial.println(stopBtnState);
+
+  //startCooking = true;
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
