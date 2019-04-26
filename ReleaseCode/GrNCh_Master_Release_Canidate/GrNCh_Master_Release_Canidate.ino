@@ -37,12 +37,14 @@ int mSpeed = 400;
 const short rotF = -11972; //needs to be negative because it works better than trying to use the abs() function.
 int switchVal;
 bool isHome = false;
+
 unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 5000;
 unsigned long flipInterval = 5000;
 unsigned long breakInterval = 4000;
+
 double ambTemp;
 double meatTemp;
 
