@@ -81,6 +81,7 @@ void loop()
 
   if (startBtnState)
   {
+    previousMillis = millis();
     startCooking = true;
   }
   if (stopBtnState)
