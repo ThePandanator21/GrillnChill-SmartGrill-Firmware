@@ -18,6 +18,8 @@ int PROBE_0 = 26; //Ambient Probe Chip Select
 int PROBE_1 = 27; //Meat Probe Chip Select
 int PROBE_2 = 28; //System Probe Chip Select
 int HOMESWITCH = 30;
+int STARTSWITCH = 31;
+int STOPSWITCH = 32;
 int FANMODULE = 40;
 
 //Component Declarations
@@ -48,6 +50,8 @@ double highTemp = 375;
 double lowTemp = 350;
 bool blowing = false;
 
+bool startCooking = false;
+
 void setup()
 {
   Serial.begin(9600);
@@ -57,15 +61,12 @@ void setup()
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
-  //rotHome();
+  rotHome();
 }
 
 void loop()
 {
   unsigned long currentMillis = millis();
-
-  //digitalWrite(FANMODULE, HIGH);
-
   //Serial.println(currentMillis); //Debug print.
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
