@@ -90,23 +90,18 @@ void loop()
     {
       rotHome();
     }
-    
     startCooking = false;
   }
-
   //Serial.print("StartButton value = "); Serial.println(startBtnState);
   //Serial.print("StopButton value = "); Serial.println(stopBtnState);
-
-  //startCooking = true;
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
-    //Serial.println("In if statement"); //Debug print.
     //Serial.println(ambProbe.readFarenheit());
     ambTemp = getTemp(ambProbe);
-    Serial.println(ambTemp); //Debug print.
+    Serial.print("Ambient Probe Value = ");Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
-    Serial.println(meatTemp); //Debug print.
+    Serial.print("Meat Probe Value = ");Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
   }
 
@@ -123,14 +118,10 @@ void loop()
     digitalWrite(FANMODULE, LOW);
   }
 
-  //Serial.println(blowing);
-
   if (((currentMillis - previousFlipMillis) >= flipInterval) && startCooking) //Time to flip. Logic heavily pending.
   {
-    //Serial.print("The value of isHome = "); //Debug print.
-    //Serial.println(isHome);
-    
-    if (isHome) //Export this to a function flipTime();
+    //Serial.print("The value of isHome = "); Serial.println(isHome);
+    if (isHome)
     {
       rotBasket();
       previousFlipMillis = currentMillis;
@@ -150,7 +141,6 @@ void loop()
 
 double getTemp(MAX6675 probe)
 {
-
   //Serial.println(probe.readFarenheit());
   double temp = probe.readFarenheit();
 
@@ -198,7 +188,7 @@ void rotBasket()
     While the encoders value is less than that of our rot limit, drive motor.
     Else, stop motor, set isHome to false, reset enc value, and then return.
   */
-  Serial.println("rotBasket function called"); //Debug print.
+  //Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
   while (newEncVal > rotF)//while  not turned 180 degrees
@@ -212,7 +202,7 @@ void rotBasket()
   md.setM1Speed(0);
   motorEnc.write(0);
   isHome = false;
-  Serial.println("rotBasket function exit"); //Debug print.
+  //Serial.println("rotBasket function exit"); //Debug print.
   return;
 }
 
