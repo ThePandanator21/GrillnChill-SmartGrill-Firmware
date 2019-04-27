@@ -93,6 +93,7 @@ void loop()
     if (startCooking) //If we were already cooking...
     {
       rotHome();
+      shutVent();
     }
     startCooking = false;
   }
