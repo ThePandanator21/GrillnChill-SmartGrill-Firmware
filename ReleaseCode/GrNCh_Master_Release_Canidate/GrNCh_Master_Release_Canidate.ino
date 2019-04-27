@@ -92,6 +92,7 @@ void loop()
   {
     if (startCooking) //If we were already cooking...
     {
+      digitalWrite(FANMODULE, LOW); //Turn off the blower.
       rotHome();
       shutVent();
     }
