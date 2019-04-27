@@ -33,6 +33,7 @@ MAX6675 sysProbe(pSCK, PROBE_2, pMISO);
 //Logic Variables
 const int GLOBAL_ERROR_LIMIT = 15;
 int GLOBAL_ERROR_COUNT = 0;
+volatile bool IS_ERROR = false;
 
 int mSpeed = 400;
 const short rotF = -11972; //needs to be negative because it works better than trying to use the abs() function.
@@ -136,8 +137,9 @@ void loop()
     }
   }
 
-  if (GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT)
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR)
   {
+    shutVent();
     stopIfFault();
   }
 }
@@ -214,6 +216,11 @@ void shutVent()
   md.setM2Speed(-400);
   delay(5500);
   md.setM2Speed(0);
+}
+
+void ERROR_BUTTON()
+{
+  IS_ERROR = true;
 }
 
 //Motor Fault Code
