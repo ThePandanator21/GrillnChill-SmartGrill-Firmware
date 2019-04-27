@@ -209,6 +209,13 @@ void rotBasket()
   return;
 }
 
+void shutVent()
+{
+  md.setM2Speed(-400);
+  delay(5500);
+  md.setM2Speed(0);
+}
+
 //Motor Fault Code
 void stopIfFault()
 {
