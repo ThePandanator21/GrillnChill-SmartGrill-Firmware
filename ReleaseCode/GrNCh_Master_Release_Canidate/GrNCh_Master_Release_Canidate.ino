@@ -81,12 +81,15 @@ void loop()
 
   if (startBtnState)
   {
-    previousMillis = millis();
+    if (!startCooking) //If we were not already cooking...
+    {
+      previousMillis = millis();
+    }
     startCooking = true;
   }
   if (stopBtnState)
   {
-    if (startCooking)
+    if (startCooking) //If we were already cooking...
     {
       rotHome();
     }
