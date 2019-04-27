@@ -218,6 +218,13 @@ void shutVent()
   md.setM2Speed(0);
 }
 
+void openVent()
+{
+  md.setM2Speed(400);
+  delay(5500);
+  md.setM2Speed(0);
+}
+
 void ERROR_BUTTON()
 {
   IS_ERROR = true;
