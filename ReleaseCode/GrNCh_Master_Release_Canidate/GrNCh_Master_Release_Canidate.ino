@@ -40,6 +40,8 @@ const short rotF = -11972; //needs to be negative because it works better than t
 int switchVal;
 bool isHome = false;
 
+bool ventShut = true;
+
 unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
@@ -69,6 +71,7 @@ void setup()
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
+  openVent();
   rotHome();
 }
 
@@ -215,16 +218,24 @@ void rotBasket()
 
 void shutVent()
 {
+  if (!ventShut)
+  {
   md.setM2Speed(-400);
   delay(5500);
   md.setM2Speed(0);
+  ventShut = true;
+  }
 }
 
 void openVent()
 {
-  md.setM2Speed(400);
-  delay(5500);
-  md.setM2Speed(0);
+  if (ventShut)
+  {
+    md.setM2Speed(400);
+    delay(5500);
+    md.setM2Speed(0);
+    ventShut = false;
+  }
 }
 
 void ERROR_BUTTON()
