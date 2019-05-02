@@ -68,7 +68,8 @@ void setup()
 {
   Serial.begin(9600);
   Serial1.begin(9600);
-  pinMode(ESTOP, INPUT);
+  //pinMode(ESTOP, INPUT);
+  attachInterrupt(digitalPinToInterrupt(ESTOP), ERROR_BUTTON, HIGH); 
   pinMode(HOMESWITCH, INPUT);
   pinMode(STARTSWITCH, INPUT);
   pinMode(STOPSWITCH, INPUT);
@@ -154,10 +155,9 @@ void loop()
     }
   }
 
-  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR)
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT))
   {
-    shutVent();
-    stopIfFault();
+     ERROR_BUTTON();
   }  
 }
 
@@ -282,7 +282,9 @@ void openVent()
 
 void ERROR_BUTTON()
 {
-  IS_ERROR = true;
+  //IS_ERROR = true;
+  shutVent();
+  stopIfFault();
 }
 
 //Motor Fault Code
