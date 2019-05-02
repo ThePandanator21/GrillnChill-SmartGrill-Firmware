@@ -45,8 +45,8 @@ bool ventShut = true;
 unsigned long previousMillis = 0;
 unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
-unsigned long tempInterval = 5000;
-unsigned long flipInterval = 5000;
+unsigned long tempInterval = 2500;
+unsigned long flipInterval = 120000;
 unsigned long breakInterval = 4000;
 
 double ambTemp;
@@ -68,6 +68,7 @@ void setup()
   pinMode(STARTSWITCH, INPUT);
   pinMode(STOPSWITCH, INPUT);
   pinMode(FANMODULE, OUTPUT);
+  pinMode(BUZZ, OUTPUT);
   motorEnc.write(0);
   md.init();
   motorEnc.write(0);
@@ -83,11 +84,17 @@ void loop()
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
 
+  if ((meatTemp > 150) && startCooking)
+  {
+    buzzNow();
+  }
+
   if (startBtnState)
   {
     if (!startCooking) //If we were not already cooking...
     {
       previousMillis = millis();
+      buzzNow();
     }
     startCooking = true;
   }
@@ -108,7 +115,7 @@ void loop()
   {
     //Serial.println(ambProbe.readFarenheit());
     ambTemp = getTemp(ambProbe);
-    Serial.print("Ambient Probe Value = ");Serial.println(ambTemp); //Debug print.
+    Serial.print("Ambi Probe Value = ");Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
     Serial.print("Meat Probe Value = ");Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
@@ -155,8 +162,10 @@ void loop()
   {
     shutVent();
     stopIfFault();
-  }
+  }  
 }
+
+//---------------FUNCTIONS---------------//
 
 double getTemp(MAX6675 probe)
 {
@@ -171,15 +180,22 @@ double getTemp(MAX6675 probe)
   return temp;
 }
 
+void buzzNow()
+{
+  digitalWrite(BUZZ, HIGH);
+  delay(100);
+  digitalWrite(BUZZ, LOW);
+}
+
 void rotHome()
 {
-  Serial.println("Enter rotHome"); //Debug print.
+  //Serial.println("Enter rotHome"); //Debug print.
   
   long startMillis = millis();
   long curHomeMillis = 0;
   
   bool homeSwVal = digitalRead(HOMESWITCH);
-  Serial.print("HomeSwitch value = "); Serial.println(homeSwVal);
+  //Serial.print("HomeSwitch value = "); Serial.println(homeSwVal);
   
   while ((!homeSwVal))
   {
@@ -195,7 +211,7 @@ void rotHome()
     }
   }
   md.setM1Speed(0);
-  Serial.println("Exit rotHome"); //Debug print.
+  //Serial.println("Exit rotHome"); //Debug print.
   isHome = true;
   motorEnc.write(0);
   return;
