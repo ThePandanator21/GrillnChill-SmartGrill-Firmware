@@ -51,6 +51,8 @@ unsigned long breakInterval = 4000;
 
 double ambTemp;
 double meatTemp;
+double targetTemp = 165;
+double degreeOffset = 10; //This is used because we arent sure of how our probe is reading sometimes.
 
 double highTemp = 375;
 double lowTemp = 350;
@@ -59,6 +61,8 @@ bool blowing = false;
 bool startCooking = false;
 bool startBtnState = false;
 bool stopBtnState = false;
+
+int btValue;
 
 void setup()
 {
@@ -84,8 +88,10 @@ void loop()
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
 
-  if ((meatTemp > 150) && startCooking)
+  if ((meatTemp > (targetTemp + degreeOffset)) && startCooking)//Cooking Done ish
   {
+    buzzNow();
+    buzzNow();
     buzzNow();
   }
 
@@ -98,7 +104,7 @@ void loop()
     }
     startCooking = true;
   }
-  if (stopBtnState || meatTemp > 150)
+  if (stopBtnState || (meatTemp > (targetTemp + degreeOffset)))
   {
     if (startCooking) //If we were already cooking...
     {
@@ -121,11 +127,11 @@ void loop()
     previousTempMillis = currentMillis; 
   }
 
-  if ((ambTemp < (lowTemp + 25)) && startCooking && ventShut)
+  if ((ambTemp < highTemp) && startCooking)
   {
     openVent();
   }
-  else if ((ambTemp > (lowTemp + 50)) && startCooking && !ventShut)
+  else if ((ambTemp > (highTemp + 25)) && startCooking)
   {
     shutVent();
   }
