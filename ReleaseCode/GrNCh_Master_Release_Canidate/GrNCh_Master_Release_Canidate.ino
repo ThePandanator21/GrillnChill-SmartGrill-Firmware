@@ -91,7 +91,7 @@ void loop()
     }
     startCooking = true;
   }
-  if (stopBtnState)
+  if (stopBtnState || meatTemp > 150)
   {
     if (startCooking) //If we were already cooking...
     {
@@ -112,6 +112,15 @@ void loop()
     meatTemp = getTemp(metProbe);
     Serial.print("Meat Probe Value = ");Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis; 
+  }
+
+  if ((ambTemp < (lowTemp + 25)) && startCooking && ventShut)
+  {
+    openVent();
+  }
+  else if ((ambTemp > (lowTemp + 50)) && startCooking && !ventShut)
+  {
+    shutVent();
   }
 
   if ((ambTemp < lowTemp) && startCooking)
