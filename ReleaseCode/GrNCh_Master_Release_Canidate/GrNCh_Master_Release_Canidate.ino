@@ -67,6 +67,7 @@ int btValue;
 void setup()
 {
   Serial.begin(9600);
+  Serial1.begin(9600);
   pinMode(ESTOP, INPUT);
   pinMode(HOMESWITCH, INPUT);
   pinMode(STARTSWITCH, INPUT);
@@ -97,25 +98,12 @@ void loop()
 
   if (startBtnState)
   {
-    if (!startCooking) //If we were not already cooking...
-    {
-      previousMillis = millis();
-      buzzNow();
-    }
-    startCooking = true;
+    beginCooking();
   }
   if (stopBtnState || (meatTemp > (targetTemp + degreeOffset)))
   {
-    if (startCooking) //If we were already cooking...
-    {
-      digitalWrite(FANMODULE, LOW); //Turn off the blower.
-      rotHome();
-      shutVent();
-    }
-    startCooking = false;
+    endCooking();
   }
-  //Serial.print("StartButton value = "); Serial.println(startBtnState);
-  //Serial.print("StopButton value = "); Serial.println(stopBtnState);
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
@@ -174,6 +162,27 @@ void loop()
 }
 
 //---------------FUNCTIONS---------------//
+
+void beginCooking()
+{
+  if (!startCooking) //If we were not already cooking...
+  {
+    previousMillis = millis();
+    buzzNow();
+  }
+  startCooking = true;
+}
+
+void endCooking()
+{
+  if (startCooking) //If we were already cooking...
+  {
+    digitalWrite(FANMODULE, LOW); //Turn off the blower.
+    rotHome();
+    shutVent();
+  }
+  startCooking = false;
+}
 
 double getTemp(MAX6675 probe)
 {
