@@ -39,7 +39,6 @@ int mSpeed = 400;
 const short rotF = -11972; //needs to be negative because it works better than trying to use the abs() function.
 int switchVal;
 bool isHome = false;
-
 bool ventShut = true;
 
 unsigned long previousMillis = 0;
@@ -53,6 +52,7 @@ double ambTemp;
 double meatTemp;
 double targetTemp = 165;
 double degreeOffset = 10; //This is used because we arent sure of how our probe is reading sometimes.
+double donessRatio = 0;
 
 double highTemp = 375;
 double lowTemp = 350;
@@ -124,7 +124,9 @@ void loop()
     Serial.print("Ambi Probe Value = ");Serial.println(ambTemp); //Debug print.
     meatTemp = getTemp(metProbe);
     Serial.print("Meat Probe Value = ");Serial.println(meatTemp); //Debug print.
-    previousTempMillis = currentMillis; 
+    previousTempMillis = currentMillis;
+
+    donessRatio = meatTemp/targetTemp;
   }
 
   if ((ambTemp < highTemp) && startCooking)
