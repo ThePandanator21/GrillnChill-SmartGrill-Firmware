@@ -117,6 +117,8 @@ void loop()
     }
   }
 
+  //Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
+
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
 
