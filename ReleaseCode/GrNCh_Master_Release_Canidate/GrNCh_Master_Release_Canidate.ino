@@ -99,22 +99,11 @@ void loop()
       case -500: //Emergency Stop from phone.
         break;
         
-      case 100: //Chicken
-        targetTemp = 165;
-        break;
-        
-      case 200: //Steak
-        targetTemp = 140;
-        break;
-        
-      case 300: //Borgar
-        targetTemp = 160;
-        break;
-        
       default:
-        targetTemp = 165;
+        targetTemp = btValue;
         break;
     }
+    Serial.print("tgtTemp = "); Serial.println(targetTemp);
   }
 
   //Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
@@ -159,6 +148,19 @@ void loop()
     previousTempMillis = currentMillis;
 
     donessRatio = meatTemp/targetTemp;
+
+    String phoneData;
+    String ambTempThing;
+    String metTempThing;
+
+    ambTempThing = String(int(ambTemp));
+    metTempThing = String(int(meatTemp));
+
+    phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
+
+    Serial1.print(phoneData);
+    //Serial.println(phoneData);
+    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
   }
 
   if ((ambTemp < highTemp) && startCooking)
@@ -201,22 +203,6 @@ void loop()
   if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT))
   {
      ERROR_BUTTON();
-  }
-
-  if (Serial1.available() > 0)
-  {
-    String phoneData;
-    String ambTempThing;
-    String metTempThing;
-
-    ambTempThing = String(int(ambTemp));
-    metTempThing = String(int(meatTemp));
-
-    phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
-
-    Serial1.print(phoneData);
-    //Serial.println(phoneData);
-    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
   }
 }
 
