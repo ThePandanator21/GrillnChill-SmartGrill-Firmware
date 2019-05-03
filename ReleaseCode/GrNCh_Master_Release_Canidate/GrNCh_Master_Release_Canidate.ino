@@ -87,6 +87,9 @@ void loop()
   unsigned long currentMillis = millis();
   //Serial.println(currentMillis); //Debug print.
 
+  startBtnState = digitalRead(STARTSWITCH);
+  stopBtnState = digitalRead(STOPSWITCH);
+
   if (Serial1.available() > 0)
   {
     btValue = Serial1.parseInt();
@@ -97,6 +100,7 @@ void loop()
         break;
         
       case -500: //Emergency Stop from phone.
+        stopBtnState = true;
         break;
         
       default:
@@ -107,9 +111,6 @@ void loop()
   }
 
   //Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
-
-  startBtnState = digitalRead(STARTSWITCH);
-  stopBtnState = digitalRead(STOPSWITCH);
 
   if ((meatTemp > (targetTemp + degreeOffset)) && startCooking)//Cooking Done ish
   {
