@@ -87,6 +87,8 @@ void loop()
   unsigned long currentMillis = millis();
   //Serial.println(currentMillis); //Debug print.
 
+  bool flipNow = false;
+
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
 
@@ -125,6 +127,10 @@ void loop()
     {
       previousMillis = millis();
       buzzNow();
+    }
+    else if (startCooking)
+    {
+      flipNow = true;
     }
     startCooking = true;
   }
@@ -186,7 +192,7 @@ void loop()
     digitalWrite(FANMODULE, LOW);
   }
 
-  if (((currentMillis - previousFlipMillis) >= flipInterval) && startCooking) //Time to flip. Logic heavily pending.
+  if ((((currentMillis - previousFlipMillis) >= flipInterval) || flipNow) && startCooking) //If cooking and time to flip or flipoverride
   {
     //Serial.print("The value of isHome = "); Serial.println(isHome);
     if (isHome)
