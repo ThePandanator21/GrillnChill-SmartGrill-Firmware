@@ -87,6 +87,36 @@ void loop()
   unsigned long currentMillis = millis();
   //Serial.println(currentMillis); //Debug print.
 
+  if (Serial1.available() > 0)
+  {
+    btValue = Serial1.parseInt();
+    Serial.print("btValue = "); Serial.println(btValue);
+    switch (btValue)
+    {
+      case 0: //General case because sometimes the phone sends this
+        break;
+        
+      case -500: //Emergency Stop from phone.
+        break;
+        
+      case 100: //Chicken
+        targetTemp = 165;
+        break;
+        
+      case 200: //Steak
+        targetTemp = 140;
+        break;
+        
+      case 300: //Borgar
+        targetTemp = 160;
+        break;
+        
+      default:
+        targetTemp = 165;
+        break;
+    }
+  }
+
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
 
@@ -158,7 +188,23 @@ void loop()
   if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT))
   {
      ERROR_BUTTON();
-  }  
+  }
+
+  if (Serial1.available() > 0)
+  {
+    String phoneData;
+    String ambTempThing;
+    String metTempThing;
+
+    ambTempThing = String(int(ambTemp));
+    metTempThing = String(int(meatTemp));
+
+    phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
+
+    Serial1.print(phoneData);
+    //Serial.println(phoneData);
+    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
+  }
 }
 
 //---------------FUNCTIONS---------------//
