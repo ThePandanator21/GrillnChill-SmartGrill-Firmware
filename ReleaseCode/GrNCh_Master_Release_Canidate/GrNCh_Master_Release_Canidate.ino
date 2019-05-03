@@ -131,11 +131,22 @@ void loop()
 
   if (startBtnState)
   {
-    beginCooking();
+    if (!startCooking) //If we were not already cooking...
+    {
+      previousMillis = millis();
+      buzzNow();
+    }
+    startCooking = true;
   }
   if (stopBtnState || (meatTemp > (targetTemp + degreeOffset)))
   {
-    endCooking();
+    if (startCooking) //If we were already cooking...
+    {
+      digitalWrite(FANMODULE, LOW); //Turn off the blower.
+      rotHome();
+      shutVent();
+    }
+    startCooking = false;
   }
   
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
@@ -154,7 +165,7 @@ void loop()
   {
     openVent();
   }
-  else if ((ambTemp > (highTemp + 25)) && startCooking)
+  if ((ambTemp > (highTemp + 25)) && startCooking)
   {
     shutVent();
   }
@@ -213,23 +224,12 @@ void loop()
 
 void beginCooking()
 {
-  if (!startCooking) //If we were not already cooking...
-  {
-    previousMillis = millis();
-    buzzNow();
-  }
-  startCooking = true;
+
 }
 
 void endCooking()
 {
-  if (startCooking) //If we were already cooking...
-  {
-    digitalWrite(FANMODULE, LOW); //Turn off the blower.
-    rotHome();
-    shutVent();
-  }
-  startCooking = false;
+
 }
 
 double getTemp(MAX6675 probe)
