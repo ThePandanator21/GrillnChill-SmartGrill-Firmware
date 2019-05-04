@@ -224,23 +224,17 @@ void loop()
     buzzBad();
   }
 
-  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT))
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR)
   {
-     ERROR_BUTTON();
+     shutVent();
+     //rotateTo90();
+     Serial1.print("0,0,0,1");
+     buzzBad();
+     stopIfFault();
   }
 }
 
 //---------------FUNCTIONS---------------//
-
-void beginCooking()
-{
-
-}
-
-void endCooking()
-{
-
-}
 
 double getTemp(MAX6675 probe)
 {
@@ -347,9 +341,7 @@ void openVent()
 
 void ERROR_BUTTON()
 {
-  //IS_ERROR = true;
-  shutVent();
-  stopIfFault();
+  IS_ERROR = true;
 }
 
 //Motor Fault Code
