@@ -219,7 +219,7 @@ void loop()
     flipNow = false;
   }
 
-  if (ambTemp > 500)
+  if (ambTemp > (highTemp + 50))
   {
     buzzBad();
   }
