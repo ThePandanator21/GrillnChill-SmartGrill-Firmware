@@ -174,6 +174,7 @@ void loop()
     phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
 
     Serial1.print(phoneData);
+    Serial1.flush();
     //Serial.println(phoneData);
     //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
   }
@@ -225,7 +226,7 @@ void loop()
     buzzBad();
   }
 
-  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (highTemp + 100))
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (ambTemp > (highTemp + 100)))
   {
      shutVent();
      rot90();
