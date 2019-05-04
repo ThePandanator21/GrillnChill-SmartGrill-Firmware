@@ -36,7 +36,8 @@ int GLOBAL_ERROR_COUNT = 0;
 volatile bool IS_ERROR = false;
 
 int mSpeed = 400;
-const short rotF = -11972; //needs to be negative because it works better than trying to use the abs() function.
+const short rotOut = -11975; //needs to be negative because it works better than trying to use the abs() function.
+const short rotVert = 5986;
 int switchVal;
 bool isHome = false;
 bool ventShut = true;
@@ -219,22 +220,22 @@ void loop()
     flipNow = false;
   }
 
-  if (ambTemp > (highTemp + 50))
+  if (ambTemp > (highTemp + 50)) //Warning too hot
   {
     buzzBad();
   }
 
-  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR)
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (highTemp + 100))
   {
      shutVent();
-     //rotateTo90();
+     rot90();
      Serial1.print("0,0,0,1");
      buzzBad();
      stopIfFault();
   }
 }
 
-//---------------FUNCTIONS---------------//
+//--------------------------------------------- FUNCTIONS ---------------------------------------------//
 
 double getTemp(MAX6675 probe)
 {
@@ -298,7 +299,7 @@ void rotBasket()
   //Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
-  while (newEncVal > rotF)//while  not turned 180 degrees
+  while (newEncVal > rotOut)//while  not turned 180 degrees
   {
     //Motor Driving Code
     md.setM1Speed(mSpeed);
@@ -310,6 +311,34 @@ void rotBasket()
   motorEnc.write(0);
   isHome = false;
   //Serial.println("rotBasket function exit"); //Debug print.
+  return;
+}
+
+void rot90()
+{
+  //Serial.println("rot90 function called"); //Debug print.
+  
+  long newEncVal = motorEnc.read();
+  if(isHome)
+  {
+    while (newEncVal > -rotVert)
+    {
+    md.setM1Speed(mSpeed);
+    newEncVal = motorEnc.read();
+    }
+  }
+  else if (!isHome)
+  {
+    while (newEncVal < rotVert)
+    {
+    md.setM1Speed(-mSpeed);
+    newEncVal = motorEnc.read();
+    }
+  }
+  md.setM1Speed(0);
+  motorEnc.write(0);
+  //Serial.println("rot90 function exit"); //Debug print.
+  
   return;
 }
 
