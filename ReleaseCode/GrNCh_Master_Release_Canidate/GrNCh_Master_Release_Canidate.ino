@@ -104,6 +104,10 @@ void loop()
       case -500: //Emergency Stop from phone.
         stopBtnState = true;
         break;
+
+      case -200: //Start / flip from phone
+        startBtnState = true;
+        break;
         
       default:
         targetTemp = btValue;
@@ -111,16 +115,17 @@ void loop()
     }
     Serial.print("tgtTemp = "); Serial.println(targetTemp);
   }
-
   //Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
 
-  if ((meatTemp > (targetTemp + degreeOffset)) && startCooking)//Cooking Done ish
+  /*  Meat Done Alert */
+  if ((meatTemp > (targetTemp + degreeOffset)) && startCooking)
   {
     buzzNow();
     buzzNow();
     buzzNow();
   }
 
+  /*  Front Panel Logic */
   if (startBtnState)
   {
     if (!startCooking) //If we were not already cooking...
@@ -144,7 +149,8 @@ void loop()
     }
     startCooking = false;
   }
-  
+
+  /*  Temperature Sampling and BT Send*/
   if ((currentMillis - previousTempMillis) >= tempInterval) //Time to update temperatures.
   {
     //Serial.println(ambProbe.readFarenheit());
@@ -156,6 +162,7 @@ void loop()
 
     donessRatio = meatTemp/targetTemp;
 
+    /* Bluetooth Send on Update */
     String phoneData;
     String ambTempThing;
     String metTempThing;
@@ -165,11 +172,11 @@ void loop()
 
     phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
 
-    Serial1.print(phoneData);
     //Serial.println(phoneData);
     //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
   }
 
+  /* Vent Control */
   if ((ambTemp < highTemp) && startCooking)
   {
     openVent();
@@ -179,6 +186,7 @@ void loop()
     shutVent();
   }
 
+  /* Fan Blower Control */
   if ((ambTemp < lowTemp) && startCooking)
   {
     blowing = true;
@@ -192,6 +200,7 @@ void loop()
     digitalWrite(FANMODULE, LOW);
   }
 
+  /* Flip Logic */
   if ((((currentMillis - previousFlipMillis) >= flipInterval) || flipNow) && startCooking) //If cooking and time to flip or flipoverride
   {
     //Serial.print("The value of isHome = "); Serial.println(isHome);
@@ -205,6 +214,13 @@ void loop()
       rotHome();
       previousFlipMillis = currentMillis;
     }
+
+    flipNow = false;
+  }
+
+  if (ambTemp > 500)
+  {
+    buzzBad();
   }
 
   if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT))
@@ -242,6 +258,13 @@ void buzzNow()
 {
   digitalWrite(BUZZ, HIGH);
   delay(100);
+  digitalWrite(BUZZ, LOW);
+}
+
+void buzzBad()
+{
+  digitalWrite(BUZZ, HIGH);
+  delay(5000);
   digitalWrite(BUZZ, LOW);
 }
 
