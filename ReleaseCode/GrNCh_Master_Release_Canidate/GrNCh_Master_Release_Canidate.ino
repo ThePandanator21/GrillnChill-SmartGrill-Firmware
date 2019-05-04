@@ -295,10 +295,6 @@ void rotHome()
 
 void rotBasket()
 {
-  /*Define a new long to contain the motor encoder's current value.
-    While the encoders value is less than that of our rot limit, drive motor.
-    Else, stop motor, set isHome to false, reset enc value, and then return.
-  */
   //Serial.println("rotBasket function called"); //Debug print.
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
