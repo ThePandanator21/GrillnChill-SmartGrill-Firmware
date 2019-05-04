@@ -54,7 +54,7 @@ double targetTemp = 165;
 double degreeOffset = 10; //This is used because we arent sure of how our probe is reading sometimes.
 double donessRatio = 0;
 
-double highTemp = 375;
+double highTemp = 600;
 double lowTemp = 350;
 bool blowing = false;
 
