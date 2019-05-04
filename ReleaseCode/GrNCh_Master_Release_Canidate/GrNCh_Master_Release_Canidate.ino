@@ -172,6 +172,7 @@ void loop()
 
     phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
 
+    Serial1.print(phoneData);
     //Serial.println(phoneData);
     //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
   }
