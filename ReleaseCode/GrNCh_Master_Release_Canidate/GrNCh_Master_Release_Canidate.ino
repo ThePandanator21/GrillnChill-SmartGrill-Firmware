@@ -36,8 +36,7 @@ int GLOBAL_ERROR_COUNT = 0;
 volatile bool IS_ERROR = false;
 
 int mSpeed = 400;
-const short rotOut = -11975; //needs to be negative because it works better than trying to use the abs() function.
-const short rotVert = 5986;
+const short rotOut = -11975; //Needs to be negative because it works better than trying to use the abs() function.
 int switchVal;
 bool isHome = false;
 bool ventShut = true;
@@ -318,34 +317,6 @@ void rotBasket()
   motorEnc.write(0);
   isHome = false;
   //Serial.println("rotBasket function exit"); //Debug print.
-  return;
-}
-
-void rot90()
-{
-  //Serial.println("rot90 function called"); //Debug print.
-  
-  long newEncVal = motorEnc.read();
-  if(isHome)
-  {
-    while (newEncVal > -rotVert)
-    {
-    md.setM1Speed(mSpeed);
-    newEncVal = motorEnc.read();
-    }
-  }
-  else if (!isHome)
-  {
-    while (newEncVal < rotVert)
-    {
-    md.setM1Speed(-mSpeed);
-    newEncVal = motorEnc.read();
-    }
-  }
-  md.setM1Speed(0);
-  motorEnc.write(0);
-  //Serial.println("rot90 function exit"); //Debug print.
-  
   return;
 }
 
