@@ -57,7 +57,6 @@ double donessRatio = 0;
 
 double highTemp = 500;
 double lowTemp = 350;
-bool blowing = false;
 
 bool startCooking = false;
 bool startBtnState = false;
@@ -97,33 +96,37 @@ void loop()
   if (Serial1.available() > 0)
   {
     btValue = Serial1.parseInt();
-    Serial.print("btValue = "); Serial.println(btValue);
+    Serial.print("BlueTooth Value Received = "); Serial.println(btValue);
     switch (btValue)
     {
       case 0: //General case because sometimes the phone sends this
         break;
         
-      case -500: //Emergency Stop from phone.
+      case -500: //Stop from phone.
         stopBtnState = true;
         break;
 
-      case -200: //Start / flip from phone
+      case -200: //Start / Flip from phone
         startBtnState = true;
         break;
         
       default:
-        targetTemp = btValue;
+        if (btValue < 0)
+        {
+          targetTemp = 165;
+        }
+        else
+        {
+          targetTemp = btValue;
+        }
         break;
     }
-    Serial.print("tgtTemp = "); Serial.println(targetTemp);
+    Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
   }
-  //Serial.print("Targ Temp Value = ");Serial.println(targetTemp); //Debug print.
-
+  
   /*  Meat Done Alert */
   if ((meatTemp > (targetTemp + degreeOffset)) && startCooking)
   {
-    buzzNow();
-    buzzNow();
     buzzNow();
   }
 
@@ -182,32 +185,31 @@ void loop()
     phoneData = ambTempThing + ',' + metTempThing + ',' + String(doneness) + ',' + String(IS_ERROR);
 
     Serial1.print(phoneData);
-    //Serial1.flush();
-    Serial.println(phoneData);
-    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');    
+    Serial1.flush();
+    Serial.print("String Sent to Phone = "); Serial.println(phoneData);
   }
 
   /* Vent Control */
   if ((ambTemp < highTemp) && startCooking)
   {
+    Serial.println("Too Cold, Opening Vent");
     openVent();
   }
   if ((ambTemp > (highTemp + 100)) && startCooking) // If Amb > 600
   {
+    Serial.println("Too Hot, Opening Vent");
     shutVent();
   }
 
   /* Fan Blower Control */
   if ((ambTemp < lowTemp) && startCooking)
   {
-    blowing = true;
-    //Serial.println("OOO WE BLOWING");
+    Serial.println("Blower Activated");
     digitalWrite(FANMODULE, HIGH);
   }
   else if ((ambTemp > (highTemp - 100)) && startCooking) //If Amb > 400
   {
-    //Serial.println("NO BLOW ZONE");
-    blowing = false;
+    Serial.println("Blower Shutdown");
     digitalWrite(FANMODULE, LOW);
   }
 
@@ -232,9 +234,9 @@ void loop()
   /* Error Logic */
   if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (ambTemp > (highTemp + 200))) //amb > 700
   {
+     Serial.println("ERRORS DETECTED");
      Serial1.print("0,0,0,1");
      buzzBad();
-     //Serial.print("0,0,0,1");
      shutVent();
      stopIfFault();
   }
