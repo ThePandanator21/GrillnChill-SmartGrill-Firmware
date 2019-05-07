@@ -243,12 +243,12 @@ void loop()
 
 //--------------------------------------------- FUNCTIONS ---------------------------------------------//
 
+//Call to get probe temp, adds to global error count if bad temp like 0;
 double getTemp(MAX6675 probe)
 {
-  //Serial.println(probe.readFarenheit());
   double temp = probe.readFarenheit();
 
-  if (temp < 0)//MAX6675 tends to skew to here if there is a connection error.
+  if ((temp < 0) || (temp > 1000))
   {
     GLOBAL_ERROR_COUNT++;
   }
@@ -256,6 +256,7 @@ double getTemp(MAX6675 probe)
   return temp;
 }
 
+//short beep for gentle alerts
 void buzzNow()
 {
   digitalWrite(BUZZ, HIGH);
@@ -263,13 +264,15 @@ void buzzNow()
   digitalWrite(BUZZ, LOW);
 }
 
+//beeps for a 5 seconds when there is an issue.
 void buzzBad()
 {
   digitalWrite(BUZZ, HIGH);
-  delay(5000);
+  delay(1000);
   digitalWrite(BUZZ, LOW);
 }
 
+//Uses switch value to rotate basket to home position, and breaks out if rotating too long.
 void rotHome()
 {
   //Serial.println("Enter rotHome"); //Debug print.
@@ -300,6 +303,7 @@ void rotHome()
   return;
 }
 
+//Uses encoder readings to rotate the basket out 180 degrees
 void rotBasket()
 {
   //Serial.println("rotBasket function called"); //Debug print.
@@ -320,6 +324,7 @@ void rotBasket()
   return;
 }
 
+//closes smoke stack only if open
 void shutVent()
 {
   if (!ventShut)
@@ -331,6 +336,7 @@ void shutVent()
   }
 }
 
+//opens smoke stack only if closed
 void openVent()
 {
   if (ventShut)
@@ -342,6 +348,7 @@ void openVent()
   }
 }
 
+//Estop ISR
 void ERROR_BUTTON()
 {
   IS_ERROR = true;
