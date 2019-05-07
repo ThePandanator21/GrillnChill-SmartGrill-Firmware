@@ -162,17 +162,24 @@ void loop()
     Serial.print("Meat Probe Value = ");Serial.println(meatTemp); //Debug print.
     previousTempMillis = currentMillis;
 
-    donessRatio = meatTemp/targetTemp;
+    float donenessRatio = meatTemp/targetTemp;
     
     /* Bluetooth Send on Update */
     String phoneData;
     String ambTempThing;
     String metTempThing;
 
+    bool doneness = false;
+
+    if (donenessRatio > .9)
+    {
+      doneness = true;
+    }
+
     ambTempThing = String(int(ambTemp));
     metTempThing = String(int(meatTemp));
 
-    phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
+    phoneData = ambTempThing + ',' + metTempThing + ',' + String(doneness) + ',' + String(IS_ERROR);
 
     Serial1.print(phoneData);
     //Serial1.flush();
