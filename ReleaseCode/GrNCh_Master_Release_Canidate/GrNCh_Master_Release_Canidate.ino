@@ -55,7 +55,7 @@ double targetTemp = 165;
 double degreeOffset = 10; //This is used because we arent sure of how our probe is reading sometimes.
 double donessRatio = 0;
 
-double highTemp = 600;
+double highTemp = 500;
 double lowTemp = 350;
 bool blowing = false;
 
@@ -69,8 +69,8 @@ void setup()
 {
   Serial.begin(9600);
   Serial1.begin(9600);
-  //pinMode(ESTOP, INPUT);
-  attachInterrupt(digitalPinToInterrupt(ESTOP), ERROR_BUTTON, HIGH); 
+  pinMode(ESTOP, INPUT);
+  //attachInterrupt(digitalPinToInterrupt(ESTOP), ERROR_BUTTON, RISING); 
   pinMode(HOMESWITCH, INPUT);
   pinMode(STARTSWITCH, INPUT);
   pinMode(STOPSWITCH, INPUT);
@@ -92,6 +92,7 @@ void loop()
 
   startBtnState = digitalRead(STARTSWITCH);
   stopBtnState = digitalRead(STOPSWITCH);
+  IS_ERROR = digitalRead(ESTOP);
 
   if (Serial1.available() > 0)
   {
@@ -162,7 +163,7 @@ void loop()
     previousTempMillis = currentMillis;
 
     donessRatio = meatTemp/targetTemp;
-
+    
     /* Bluetooth Send on Update */
     String phoneData;
     String ambTempThing;
@@ -174,9 +175,9 @@ void loop()
     phoneData = ambTempThing + ',' + metTempThing + ',' + '0' + ',' + '0';
 
     Serial1.print(phoneData);
-    Serial1.flush();
-    //Serial.println(phoneData);
-    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');
+    //Serial1.flush();
+    Serial.println(phoneData);
+    //Serial.println(char(ambTemp) + ',' + char(meatTemp) + ',' + '0' + ',' + '0');    
   }
 
   /* Vent Control */
@@ -184,7 +185,7 @@ void loop()
   {
     openVent();
   }
-  if ((ambTemp > (highTemp + 25)) && startCooking)
+  if ((ambTemp > (highTemp + 100)) && startCooking) // If Amb > 600
   {
     shutVent();
   }
@@ -196,7 +197,7 @@ void loop()
     //Serial.println("OOO WE BLOWING");
     digitalWrite(FANMODULE, HIGH);
   }
-  else if ((ambTemp > highTemp) && startCooking)
+  else if ((ambTemp > (highTemp - 100)) && startCooking) //If Amb > 400
   {
     //Serial.println("NO BLOW ZONE");
     blowing = false;
@@ -221,17 +222,13 @@ void loop()
     flipNow = false;
   }
 
-  if (ambTemp > (highTemp + 50)) //Warning too hot
+  /* Error Logic */
+  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (ambTemp > (highTemp + 200))) //amb > 700
   {
-    buzzBad();
-  }
-
-  if ((GLOBAL_ERROR_COUNT >= GLOBAL_ERROR_LIMIT) || IS_ERROR || (ambTemp > (highTemp + 100)))
-  {
-     shutVent();
-     rot90();
      Serial1.print("0,0,0,1");
      buzzBad();
+     //Serial.print("0,0,0,1");
+     shutVent();
      stopIfFault();
   }
 }
