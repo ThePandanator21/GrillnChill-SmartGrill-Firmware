@@ -325,6 +325,9 @@ void rotHome()
 void rotBasket()
 {
   //Serial.println("rotBasket function called"); //Debug print.
+  long startMillis = millis();
+  long curRotMillis = 0;
+  
   long newEncVal = motorEnc.read();
   //Serial.println(newEncVal);
   while (newEncVal > rotOut)//while  not turned 180 degrees
@@ -333,6 +336,11 @@ void rotBasket()
     md.setM1Speed(mSpeed);
     newEncVal = motorEnc.read();//Grab new value
     //Serial.println(newEncVal);//Debug print
+    curRotMillis = millis();
+    if(((curRotMillis - startMillis) > breakInterval))
+    {
+      break;
+    }
   }
   //Motor Stopping code
   md.setM1Speed(0);
