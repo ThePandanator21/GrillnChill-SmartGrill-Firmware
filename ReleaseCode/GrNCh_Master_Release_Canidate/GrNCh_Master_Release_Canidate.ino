@@ -238,6 +238,7 @@ void loop()
      buzzBad();
      shutVent();
      stopIfFault();
+     while(1);
   }
 }
 
