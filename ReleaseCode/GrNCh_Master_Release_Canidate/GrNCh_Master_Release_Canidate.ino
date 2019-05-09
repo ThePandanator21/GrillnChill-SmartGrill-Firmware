@@ -46,7 +46,7 @@ unsigned long previousTempMillis = 0;
 unsigned long previousFlipMillis = 0;
 unsigned long tempInterval = 2500;
 unsigned long flipInterval = 120000;
-unsigned long breakInterval = 3000;
+unsigned long breakInterval = 4000;
 
 double ambTemp;
 double meatTemp;
