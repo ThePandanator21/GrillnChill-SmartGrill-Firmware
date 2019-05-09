@@ -56,6 +56,7 @@ double donessRatio = 0;
 
 double highTemp = 500;
 double lowTemp = 350;
+bool blowing = false;
 
 bool startCooking = false;
 bool startBtnState = false;
@@ -191,24 +192,38 @@ void loop()
   /* Vent Control */
   if ((ambTemp < highTemp) && startCooking)
   {
-    Serial.println("Too Cold, Opening Vent");
+    if (ventShut)
+    {
+      Serial.println("Too Cold, Opening Vent");
+    }
     openVent();
   }
   if ((ambTemp > (highTemp + 100)) && startCooking) // If Amb > 600
   {
-    Serial.println("Too Hot, Opening Vent");
+    if (!ventShut)
+    {
+      Serial.println("Too Hot, Opening Vent");
+    }
     shutVent();
   }
 
   /* Fan Blower Control */
   if ((ambTemp < lowTemp) && startCooking)
   {
-    Serial.println("Blower Activated");
+    if (blowing == false)
+    {
+      Serial.println("Blower Activated"); 
+    }
+    blowing = true;
     digitalWrite(FANMODULE, HIGH);
   }
   else if ((ambTemp > (highTemp - 100)) && startCooking) //If Amb > 400
   {
-    Serial.println("Blower Shutdown");
+    if (blowing == true)
+    {
+      Serial.println("Blower Shutdown"); 
+    }
+    blowing = false;
     digitalWrite(FANMODULE, LOW);
   }
 
@@ -235,6 +250,8 @@ void loop()
   {
      Serial.println("ERRORS DETECTED");
      Serial1.print("0,0,0,1");
+     digitalWrite(FANMODULE, LOW);
+     md.setM1Speed(0);
      buzzBad();
      shutVent();
      stopIfFault();
